@@ -120,3 +120,11 @@ Se implementó el filtro **Solo stock bajo (`stock_bajo`)**, el cual permite al 
 
 ### Filtro propio: Productos con stock bajo
 Se agregó un filtro adicional mediante una casilla de verificación (`Solo stock bajo <= 5`) enlazado con `wire:model.live="stock_bajo"` y persistido en la URL mediante `#[Url]`. Este filtro realiza una unión (`join`) con la tabla `stock__almacen` y aplica una condición SQL (`where('stock__almacen.stock', '<=', 5)`) para identificar de inmediato los productos próximos a agotarse y facilitar su reposición en almacén.
+
+## Validaciones implementadas (Tarea 03)
+
+| Dato inválido ingresado | Campo | Regla que lo impide | Mensaje mostrado al usuario |
+| :--- | :--- | :--- | :--- |
+| Precio `-5` o `0` | `precio` | `gt:0` | El precio debe ser mayor que cero. |
+| Código repetido (`HER-0001`) | `codigo` | `Rule::unique('productos', 'codigo')->ignore(...)` | Ya existe un producto con ese código. |
+| Nombre con más de 100 caracteres | `nombre` | `max:100` | El nombre admite como máximo 100 caracteres. |

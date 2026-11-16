@@ -9,7 +9,15 @@
 </head>
 <body class="bg-gray-100">
     <div class="container mx-auto py-10 px-6 rounded-2xl bg-gradient-to-b from-gray-300 to-gray-500 shadow-lg max-w-7xl mt-7"> 
-        @yield('contenido')
-    </div>
+        <div class="col-span-1">
+            @yield('menu')
+        </div>
+        <div class="col-span-3">
+            @yield('contenido')
+        </div>
+        <div class="col-span-2">
+            @yield('formulario')
+        </div>
+    </div>     
 </body>
 </html>

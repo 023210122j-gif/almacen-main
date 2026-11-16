@@ -1,8 +1,9 @@
 <?php
 
 use App\Models\Almacen;
-use App\Models\Categoria;
 use App\Models\Producto;
+use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\On;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -22,18 +23,36 @@ new class extends Component {
     #[Url]
     public $stock_bajo = false;
 
-    public function updated($property)
+    #[On('producto-guardado')]
+    public function refrescar()
     {
-        if (in_array($property, ['buscar', 'categoria_id', 'almacen_id', 'stock_bajo'])) {
-            $this->resetPage();
-        }
+    }
+
+    public function updatedBuscar()
+    {
+        $this->resetPage();
+    }
+
+    public function updatedCategoriaId()
+    {
+        $this->resetPage();
+    }
+
+    public function updatedAlmacenId()
+    {
+        $this->resetPage();
+    }
+
+    public function updatedStockBajo()
+    {
+        $this->resetPage();
     }
 
     public function with(): array
     {
         $consulta = Producto::query()
             ->select('productos.*')
-            ->with(['cantidad.almacen', 'categoria']);
+            ->with(['cantidad.almacen']);
 
         if ($this->buscar) {
             $consulta->where(function ($q) {
@@ -62,7 +81,7 @@ new class extends Component {
 
         return [
             'productos'  => $consulta->orderBy('productos.nombre')->paginate(10),
-            'categorias' => Categoria::orderBy('nombre')->get(),
+            'categorias' => DB::table('categorias')->orderBy('nombre')->get(),
             'almacenes'  => Almacen::orderBy('nombre')->get(),
         ];
     }
@@ -106,10 +125,10 @@ new class extends Component {
                 <tr class="bg-gray-200 border-b border-gray-300 text-gray-800 text-sm">
                     <th class="p-3">Código</th>
                     <th class="p-3">Nombre</th>
-                    <th class="p-3">Categoría</th>
                     <th class="p-3">Precio</th>
                     <th class="p-3">Almacén</th>
                     <th class="p-3">Stock</th>
+                    <th class="p-3">Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -117,10 +136,17 @@ new class extends Component {
                     <tr class="border-b border-gray-200 hover:bg-gray-50 text-sm">
                         <td class="p-3">{{ $producto->codigo ?? 'S/C' }}</td>
                         <td class="p-3 font-medium">{{ $producto->nombre }}</td>
-                        <td class="p-3">{{ $producto->categoria?->nombre ?? 'Sin categoría' }}</td>
                         <td class="p-3">S/ {{ number_format($producto->precio, 2) }}</td>
                         <td class="p-3">{{ $producto->cantidad->first()?->almacen?->nombre ?? 'Sin almacén' }}</td>
                         <td class="p-3">{{ $producto->cantidad->first()?->stock ?? 0 }}</td>
+                        <td class="p-3">
+                            <button 
+                                wire:click="$dispatch('editar-producto', { id: {{ $producto->id }} })"
+                                class="text-blue-600 hover:underline font-medium"
+                            >
+                                Editar
+                            </button>
+                        </td>
                     </tr>
                 @empty
                     <tr>
